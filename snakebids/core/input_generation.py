@@ -156,7 +156,10 @@ def generate_inputs(
     search_terms = _generate_search_terms(participant_label, exclude_participant_label)
 
     # Generates a BIDSLayout 
-    layout = _gen_bids_layout(bids_dir, derivatives, pybids_db)
+    layout = _gen_bids_layout(
+        bids_dir=bids_dir, 
+        derivatives=derivatives, 
+        pybids_db=pybids_db)
     
     # this will populate input_path, input_lists, input_zip_lists, and
     # input_wildcards
@@ -245,7 +248,7 @@ def _gen_bids_layout(bids_dir, derivatives, pybids_db=None):
                         "BIDS database (re)indexed to "
                         f"{pybids_db['database_dir']}/layout_index.sqlite"
                     )
-        except NameError:
+        except:
             layout = BIDSLayout(
                     bids_dir,
                     derivatives=derivatives,
