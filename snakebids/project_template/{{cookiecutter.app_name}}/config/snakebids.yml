@@ -33,11 +33,15 @@ pybids_inputs:
       - acquisition
       - task
       - run
-   
+
+#--- BIDSLayout options ---
+pybids_db:
+  database_path: '/path/to/db_dir' # Leave blank if you do not wish to use this
+  reset_database: False
 
 #configuration for the command-line parameters to make available
 # passed on the argparse add_argument()
-parse_args:
+parse_args: 
 
 #---  core BIDS-app options --- (do not modify below) 
 
