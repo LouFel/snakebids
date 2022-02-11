@@ -34,7 +34,8 @@ pybids_inputs:
       - task
       - run
 
-#--- BIDSLayout options ---
+#this configures the options to save the BIDSLayout
+# by default, database is not reindexed
 pybids_db:
   database_dir: '/path/to/db_dir' # Leave blank if you do not wish to use this
   write_database: False
