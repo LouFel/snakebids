@@ -36,8 +36,8 @@ pybids_inputs:
 
 #--- BIDSLayout options ---
 pybids_db:
-  database_path: '/path/to/db_dir' # Leave blank if you do not wish to use this
-  reset_database: False
+  database_dir: '/path/to/db_dir' # Leave blank if you do not wish to use this
+  write_database: False
 
 #configuration for the command-line parameters to make available
 # passed on the argparse add_argument()
