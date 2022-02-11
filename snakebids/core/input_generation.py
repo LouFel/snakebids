@@ -15,6 +15,7 @@ _logger = logging.getLogger(__name__)
 def generate_inputs(
     bids_dir,
     pybids_inputs,
+    pybids_db=None,
     derivatives=False,
     search_terms=None,
     limit_to=None,
@@ -101,15 +102,7 @@ def generate_inputs(
             │   ├── sub-control01_magnitude1.nii.gz
             │   ├── sub-control01_phasediff.json
             │   ├── sub-control01_phasediff.nii.gz
-            │   └── sub-control01_scans.tsv
-            └── func
-                ├── sub-control01_task-nback_bold.json
-                ├── sub-control01_task-nback_bold.nii.gz
-                ├── sub-control01_task-nback_events.tsv
-                ├── sub-control01_task-nback_physio.json
-                ├── sub-control01_task-nback_physio.tsv.gz
-                ├── sub-control01_task-nback_sbref.nii.gz
-                ├── sub-control01_task-rest_bold.json
+            │   └── sub-control01_scans.tsv    pybids_db["write_database"] = True
                 ├── sub-control01_task-rest_bold.nii.gz
                 ├── sub-control01_task-rest_physio.json
                 └── sub-control01_task-rest_physio.tsv.gz
@@ -162,21 +155,9 @@ def generate_inputs(
 
     search_terms = _generate_search_terms(participant_label, exclude_participant_label)
 
-    if os.path.exists(bids_dir):
-        # generate inputs based on config
-        layout = BIDSLayout(
-            bids_dir,
-            derivatives=derivatives,
-            validate=False,
-            indexer=BIDSLayoutIndexer(validate=False, index_metadata=False),
-        )
-    else:
-        _logger.info(
-            "bids_dir does not exist, skipping PyBIDS and using "
-            "custom file paths only"
-        )
-        layout = None
-
+    # Generates a BIDSLayout 
+    layout = _gen_bids_layout(bids_dir, derivatives, pybids_db)
+    
     # this will populate input_path, input_lists, input_zip_lists, and
     # input_wildcards
     inputs_config_dict = _get_lists_from_bids(
@@ -231,6 +212,55 @@ def generate_inputs(
         }
 
     return inputs_config_dict
+
+def _gen_bids_layout(bids_dir, derivatives, pybids_db=None):
+    """Create (or reindex) the BIDSLayout if one doesn't exist, 
+    which is only saved if a database directory path is provided
+    """
+    if os.path.exists(bids_dir):
+        # If pybids_db is defined
+        try:
+            if not pybids_db['database_dir']:
+            # generate inputs based on config
+                layout = BIDSLayout(
+                    bids_dir,
+                    derivatives=derivatives,
+                    validate=False,
+                    indexer=BIDSLayoutIndexer(
+                        validate=False, index_metadata=False),
+                )
+            else:
+                layout = BIDSLayout(
+                    bids_dir,
+                    derivatives=derivatives,
+                    validate=False,
+                    database_path=pybids_db['database_dir'],
+                    reset_database=pybids_db['write_database'],
+                    indexer=BIDSLayoutIndexer(
+                        validate=False, index_metadata=False),
+                )
+
+                if pybids_db['write_database']:
+                    _logger.info(
+                        "BIDS database (re)indexed to "
+                        f"{pybids_db['database_dir']}/layout_index.sqlite"
+                    )
+        except NameError:
+            layout = BIDSLayout(
+                    bids_dir,
+                    derivatives=derivatives,
+                    validate=False,
+                    indexer=BIDSLayoutIndexer(
+                        validate=False, index_metadata=False),
+                )
+    else:
+        _logger.info(
+            "bids_dir does not exist, skipping PyBIDS and using "
+            "custom file paths only"
+        )
+        layout = None
+
+    return layout
 
 
 def write_derivative_json(snakemake, **kwargs):
@@ -377,7 +407,7 @@ def _process_layout_wildcard(path, wildcard_name):
     # formatting (e.g. for run=01)
 
     return path, match[1], out_name
-
+    
 
 def _get_lists_from_bids(bids_layout, pybids_inputs, limit_to=None, **filters):
     """Grabs files using pybids and creates snakemake-friendly lists
