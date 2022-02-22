@@ -103,6 +103,14 @@ def generate_inputs(
             │   ├── sub-control01_phasediff.json
             │   ├── sub-control01_phasediff.nii.gz
             │   └── sub-control01_scans.tsv
+            └── func
+                ├── sub-control01_task-nback_bold.json
+                ├── sub-control01_task-nback_bold.nii.gz
+                ├── sub-control01_task-nback_events.tsv
+                ├── sub-control01_task-nback_physio.json
+                ├── sub-control01_task-nback_physio.tsv.gz
+                ├── sub-control01_task-nback_sbref.nii.gz
+                ├── sub-control01_task-rest_bold.json
                 ├── sub-control01_task-rest_bold.nii.gz
                 ├── sub-control01_task-rest_physio.json
                 └── sub-control01_task-rest_physio.tsv.gz
