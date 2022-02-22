@@ -18,11 +18,16 @@ def test_t1w():
             "wildcards": ["acquisition", "subject", "session", "run"],
         }
     }
+    pybids_db = {
+        'database_dir': '',
+        'write_database': False
+    }
 
     # Can't define particpant_label and exclude_participant_label
     with pytest.raises(ValueError) as v_error:
         config = generate_inputs(
             pybids_inputs=pybids_inputs,
+            pybids_db=pybids_db,
             bids_dir=real_bids_dir,
             derivatives=derivatives,
             participant_label="001",
@@ -36,6 +41,7 @@ def test_t1w():
     # Simplest case -- one input type, using pybids
     config = generate_inputs(
         pybids_inputs=pybids_inputs,
+        pybids_db=pybids_db,
         bids_dir=real_bids_dir,
         derivatives=derivatives,
     )
@@ -67,6 +73,7 @@ def test_t1w():
     }
     config = generate_inputs(
         pybids_inputs=pybids_inputs_suffix,
+        pybids_db=pybids_db,
         bids_dir=real_bids_dir,
         derivatives=derivatives,
         participant_label="001",
@@ -114,6 +121,7 @@ def test_t1w():
             bids_dir = "-"
         config = generate_inputs(
             pybids_inputs=pybids_inputs,
+            pybids_db=pybids_db,
             bids_dir=bids_dir,
             derivatives=derivatives,
         )

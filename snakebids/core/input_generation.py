@@ -221,41 +221,15 @@ def _gen_bids_layout(bids_dir, derivatives, pybids_db=None):
     which is only saved if a database directory path is provided
     """
     if os.path.exists(bids_dir):
-        # If pybids_db is defined
-        try:
-            if not pybids_db['database_dir']:
-            # generate inputs based on config
-                layout = BIDSLayout(
-                    bids_dir,
-                    derivatives=derivatives,
-                    validate=False,
-                    indexer=BIDSLayoutIndexer(
-                        validate=False, index_metadata=False),
-                )
-            else:
-                layout = BIDSLayout(
-                    bids_dir,
-                    derivatives=derivatives,
-                    validate=False,
-                    database_path=pybids_db['database_dir'],
-                    reset_database=pybids_db['write_database'],
-                    indexer=BIDSLayoutIndexer(
-                        validate=False, index_metadata=False),
-                )
-
-                if pybids_db['write_database']:
-                    _logger.info(
-                        "BIDS database (re)indexed to "
-                        f"{pybids_db['database_dir']}/layout_index.sqlite"
-                    )
-        except:
-            layout = BIDSLayout(
-                    bids_dir,
-                    derivatives=derivatives,
-                    validate=False,
-                    indexer=BIDSLayoutIndexer(
-                        validate=False, index_metadata=False),
-                )
+        layout = BIDSLayout(
+            bids_dir,
+            derivatives=derivatives,
+            validate=False,
+            database_path=pybids_db.get('database_dir'),
+            reset_database=pybids_db.get('write_database'),
+            indexer=BIDSLayoutIndexer(
+                validate=False, index_metadata=False),
+            )
     else:
         _logger.info(
             "bids_dir does not exist, skipping PyBIDS and using "
