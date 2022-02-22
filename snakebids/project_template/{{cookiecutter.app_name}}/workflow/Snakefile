@@ -29,8 +29,8 @@ wildcard_constraints:  **snakebids.get_wildcard_constraints(\
 
 
 rule all:
-    input: 
-        expand( bids(root=config['root'], datatype='func',suffix='bold.nii.gz', desc='smooth{fwhm}mm', **config['input_wildcards']['bold']), 
+    input:
+        expand(bids(root=config['root'], datatype='func',suffix='bold.nii.gz', desc='smooth{fwhm}mm', **config['input_wildcards']['bold']),
             fwhm = config['smoothing_fwhm'],**config['input_lists']['bold'])
 
 
@@ -43,4 +43,3 @@ rule smooth:
     container: config['singularity']['fsl']
     log: bids(root='logs',suffix='smooth.log',fwhm='{fwhm}',**config['input_wildcards']['bold'])
     shell: 'fslmaths {input} -s {params.sigma} {output}'
-
