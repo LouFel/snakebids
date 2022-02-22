@@ -102,7 +102,7 @@ def generate_inputs(
             │   ├── sub-control01_magnitude1.nii.gz
             │   ├── sub-control01_phasediff.json
             │   ├── sub-control01_phasediff.nii.gz
-            │   └── sub-control01_scans.tsv    pybids_db["write_database"] = True
+            │   └── sub-control01_scans.tsv
                 ├── sub-control01_task-rest_bold.nii.gz
                 ├── sub-control01_task-rest_physio.json
                 └── sub-control01_task-rest_physio.tsv.gz
