@@ -220,6 +220,10 @@ def _gen_bids_layout(bids_dir, derivatives, pybids_db=None):
     """Create (or reindex) the BIDSLayout if one doesn't exist, 
     which is only saved if a database directory path is provided
     """
+    # Set db dir to None (otherwise saves to parent dir)
+    if pybids_db.get('database_dir') == '':
+        pybids_db['database_dir'] = None
+
     if os.path.exists(bids_dir):
         layout = BIDSLayout(
             bids_dir,
