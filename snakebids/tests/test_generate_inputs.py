@@ -210,21 +210,21 @@ def test_db():
     # create config
     real_bids_dir = "snakebids/tests/data/bids_t1w"
     pybids_db = {
-        "database_dir": "",
+        "database_dir": '',
         "write_database": False
     }
-
+ 
     # Test non-saving first
     _ = _gen_bids_layout(
         bids_dir=real_bids_dir, 
         derivatives=False, 
         pybids_db=pybids_db)
 
-    assert not os.path.exists(pybids_db['database_dir'])
+    assert not pybids_db.get('database_dir')
 
 
     # Test saving of new layout (update config)
-    pybids_db['database_dir'] = 'snakebids/tests/data/.db'
+    pybids_db['database_dir'] = 'snakebids/tests/data/.db/'
 
     layout = _gen_bids_layout(
         bids_dir=real_bids_dir, 
@@ -232,16 +232,14 @@ def test_db():
         pybids_db=pybids_db
     )
 
-    assert os.path.exists(pybids_db['database_dir'])
-
+    assert os.path.exists(pybids_db.get('database_dir'))
 
     # Test reading of old layout when changes occur
-    os.makedirs(f"{real_bids_dir}/sub-003/anat")
-    os.rename(
-        f"{real_bids_dir}/sub-001/anat/sub-001_acq-mprage_T1w.nii.gz", 
-        f"{real_bids_dir}/sub-003/anat/sub-003_acq-mprage_T1w.nii.gz"
+    os.makedirs(f'{real_bids_dir}/sub-003/anat')
+    shutil.copy(
+        f'{real_bids_dir}/sub-001/anat/sub-001_acq-mprage_T1w.nii.gz', 
+        f'{real_bids_dir}/sub-003/anat/sub-003_acq-mprage_T1w.nii.gz'
     )
-    shutil.rmtree(f"{real_bids_dir}/sub-001")
 
     layout = _gen_bids_layout(
         bids_dir=real_bids_dir, 
@@ -249,7 +247,8 @@ def test_db():
         pybids_db=pybids_db
     )
 
-    assert layout.get(subject='001') and not layout.get(subject='003')
+    # Check to make sure new subject not cached in layout
+    assert not layout.get(subject='003')
 
 
     # Test updating of layout
@@ -261,25 +260,10 @@ def test_db():
         pybids_db=pybids_db
     )
 
-    assert layout.get(subject='003') and not layout.get(subject='001')
+    # Check to see if new subject is updated in layout
+    assert layout.get(subject='003')
 
-
-    # Test reading of updated layout 
-    pybids_db["write_database"] = False
-    os.makedirs(f"{real_bids_dir}/sub-001/anat")
-    os.rename(
-        f"{real_bids_dir}/sub-003/anat/sub-003_acq-mprage_T1w.nii.gz", 
-        f"{real_bids_dir}/sub-001/anat/sub-001_acq-mprage_T1w.nii.gz"
-    )
+    # Clean up newly created files
     shutil.rmtree(f"{real_bids_dir}/sub-003")
-
-    layout = _gen_bids_layout(
-        bids_dir=real_bids_dir, 
-        derivatives=False, 
-        pybids_db=pybids_db
-    )
-
-    assert layout.get(subject='003') and not layout.get(subject='001')
-
-    # Remove created db
     shutil.rmtree(pybids_db["database_dir"])
+
