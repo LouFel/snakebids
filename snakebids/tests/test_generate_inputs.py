@@ -6,7 +6,12 @@ import shutil
 import pytest
 from bids import BIDSLayout
 
-from snakebids.core.input_generation import _get_lists_from_bids, _gen_bids_layout, generate_inputs
+from snakebids.core.input_generation import (
+    _gen_bids_layout,
+    _get_lists_from_bids,
+    generate_inputs,
+)
+
 
 def test_t1w():
     # create config
@@ -18,10 +23,7 @@ def test_t1w():
             "wildcards": ["acquisition", "subject", "session", "run"],
         }
     }
-    pybids_db = {
-        'database_dir': '',
-        'write_database': False
-    }
+    pybids_db = {"database_dir": "", "write_database": False}
 
     # Can't define particpant_label and exclude_participant_label
     with pytest.raises(ValueError) as v_error:
@@ -206,64 +208,50 @@ def test_get_lists_from_bids():
             "t2": {"subject": "{subject}"},
         }
 
+
 def test_db():
     # create config
     real_bids_dir = "snakebids/tests/data/bids_t1w"
-    pybids_db = {
-        "database_dir": '',
-        "write_database": False
-    }
- 
+    pybids_db = {"database_dir": "", "write_database": False}
+
     # Test non-saving first
-    _ = _gen_bids_layout(
-        bids_dir=real_bids_dir, 
-        derivatives=False, 
-        pybids_db=pybids_db)
+    _ = _gen_bids_layout(bids_dir=real_bids_dir, derivatives=False, pybids_db=pybids_db)
 
-    assert not pybids_db.get('database_dir')
-
+    assert not pybids_db.get("database_dir")
 
     # Test saving of new layout (update config)
-    pybids_db['database_dir'] = 'snakebids/tests/data/.db/'
+    pybids_db["database_dir"] = "snakebids/tests/data/.db/"
 
     layout = _gen_bids_layout(
-        bids_dir=real_bids_dir, 
-        derivatives=False, 
-        pybids_db=pybids_db
+        bids_dir=real_bids_dir, derivatives=False, pybids_db=pybids_db
     )
 
-    assert os.path.exists(pybids_db.get('database_dir'))
+    assert os.path.exists(pybids_db.get("database_dir"))
 
     # Test reading of old layout when changes occur
-    os.makedirs(f'{real_bids_dir}/sub-003/anat')
+    os.makedirs(f"{real_bids_dir}/sub-003/anat")
     shutil.copy(
-        f'{real_bids_dir}/sub-001/anat/sub-001_acq-mprage_T1w.nii.gz', 
-        f'{real_bids_dir}/sub-003/anat/sub-003_acq-mprage_T1w.nii.gz'
+        f"{real_bids_dir}/sub-001/anat/sub-001_acq-mprage_T1w.nii.gz",
+        f"{real_bids_dir}/sub-003/anat/sub-003_acq-mprage_T1w.nii.gz",
     )
 
     layout = _gen_bids_layout(
-        bids_dir=real_bids_dir, 
-        derivatives=False, 
-        pybids_db=pybids_db
+        bids_dir=real_bids_dir, derivatives=False, pybids_db=pybids_db
     )
 
     # Check to make sure new subject not cached in layout
-    assert not layout.get(subject='003')
-
+    assert not layout.get(subject="003")
 
     # Test updating of layout
     pybids_db["write_database"] = True
 
     layout = _gen_bids_layout(
-        bids_dir=real_bids_dir, 
-        derivatives=False, 
-        pybids_db=pybids_db
+        bids_dir=real_bids_dir, derivatives=False, pybids_db=pybids_db
     )
 
     # Check to see if new subject is updated in layout
-    assert layout.get(subject='003')
+    assert layout.get(subject="003")
 
     # Clean up newly created files
     shutil.rmtree(f"{real_bids_dir}/sub-003")
     shutil.rmtree(pybids_db["database_dir"])
-

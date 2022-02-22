@@ -155,12 +155,11 @@ def generate_inputs(
 
     search_terms = _generate_search_terms(participant_label, exclude_participant_label)
 
-    # Generates a BIDSLayout 
+    # Generates a BIDSLayout
     layout = _gen_bids_layout(
-        bids_dir=bids_dir, 
-        derivatives=derivatives, 
-        pybids_db=pybids_db)
-    
+        bids_dir=bids_dir, derivatives=derivatives, pybids_db=pybids_db
+    )
+
     # this will populate input_path, input_lists, input_zip_lists, and
     # input_wildcards
     inputs_config_dict = _get_lists_from_bids(
@@ -216,24 +215,24 @@ def generate_inputs(
 
     return inputs_config_dict
 
+
 def _gen_bids_layout(bids_dir, derivatives, pybids_db=None):
-    """Create (or reindex) the BIDSLayout if one doesn't exist, 
+    """Create (or reindex) the BIDSLayout if one doesn't exist,
     which is only saved if a database directory path is provided
     """
     # Set db dir to None (otherwise saves to parent dir)
-    if pybids_db.get('database_dir') == '':
-        pybids_db['database_dir'] = None
+    if pybids_db.get("database_dir") == "":
+        pybids_db["database_dir"] = None
 
     if os.path.exists(bids_dir):
         layout = BIDSLayout(
             bids_dir,
             derivatives=derivatives,
             validate=False,
-            database_path=pybids_db.get('database_dir'),
-            reset_database=pybids_db.get('write_database'),
-            indexer=BIDSLayoutIndexer(
-                validate=False, index_metadata=False),
-            )
+            database_path=pybids_db.get("database_dir"),
+            reset_database=pybids_db.get("write_database"),
+            indexer=BIDSLayoutIndexer(validate=False, index_metadata=False),
+        )
     else:
         _logger.info(
             "bids_dir does not exist, skipping PyBIDS and using "
@@ -388,7 +387,7 @@ def _process_layout_wildcard(path, wildcard_name):
     # formatting (e.g. for run=01)
 
     return path, match[1], out_name
-    
+
 
 def _get_lists_from_bids(bids_layout, pybids_inputs, limit_to=None, **filters):
     """Grabs files using pybids and creates snakemake-friendly lists
