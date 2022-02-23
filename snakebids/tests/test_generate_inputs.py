@@ -224,8 +224,6 @@ def test_db(tmp_path, tmpdir):
 
     # Test reading of old layout when changes occur
     os.makedirs(f"{tmpdir}/data/sub-003/anat")
-    # tmpdir.mkdir("data/sub-003")
-    # tmpdir.mkdir("data/sub-003/anat")
     shutil.copy(
         f"{bids_dir}/sub-001/anat/sub-001_acq-mprage_T1w.nii.gz",
         f"{bids_dir}/sub-003/anat/sub-003_acq-mprage_T1w.nii.gz",
