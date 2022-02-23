@@ -22,7 +22,7 @@ In the following (YAML-formatted) example, the ``bold`` input type is specified.
         - task
         - run
 
-pybids_db: A dictionary that provides a path to save the ``PyBIDS`` layout and whether the layout should be updated. The layout path is defined by ``database_dir``. If a layout should be saved / used, this value can be set to ``''``. If a ``database_dir`` is provided and the layout should be updated, set ``write_database`` to ``True``. Default behaviour is to use the existing database provided.
+pybids_db: A dictionary that provides a path to save the ``PyBIDS`` layout and whether the layout should be updated. The layout path is defined by ``database_dir``. If a layout should be saved / used, this value can be set to ``''``. If a ``database_dir`` is provided and the layout should be updated, set ``reset_database`` to ``True``. Default behaviour is to use the existing database provided.
 
 analysis_levels: A list of analysis levels in the BIDS app. Typically, this will include participant and/or group. Note that the default (YAML) configuration file expects this mapping to be identified with the anchor ``analysis_levels`` to be aliased by ``parse_args``.
 

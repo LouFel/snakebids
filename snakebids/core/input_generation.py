@@ -238,7 +238,7 @@ def _gen_bids_layout(bids_dir, derivatives, pybids_db=None):
             derivatives=derivatives,
             validate=False,
             database_path=pybids_db.get("database_dir"),
-            reset_database=pybids_db.get("write_database"),
+            reset_database=pybids_db.get("reset_database"),
             indexer=BIDSLayoutIndexer(validate=False, index_metadata=False),
         )
     else:
