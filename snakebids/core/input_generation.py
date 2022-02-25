@@ -15,7 +15,8 @@ _logger = logging.getLogger(__name__)
 def generate_inputs(
     bids_dir,
     pybids_inputs,
-    pybids_db=None,
+    pybids_database_dir=None,
+    pybids_reset_database=False,
     derivatives=False,
     search_terms=None,
     limit_to=None,
@@ -165,7 +166,10 @@ def generate_inputs(
 
     # Generates a BIDSLayout
     layout = _gen_bids_layout(
-        bids_dir=bids_dir, derivatives=derivatives, pybids_db=pybids_db
+        bids_dir=bids_dir, 
+        derivatives=derivatives, 
+        pybids_database_dir=pybids_database_dir,
+        pybids_reset_database=pybids_reset_database
     )
 
     # this will populate input_path, input_lists, input_zip_lists, and
@@ -224,24 +228,21 @@ def generate_inputs(
     return inputs_config_dict
 
 
-def _gen_bids_layout(bids_dir, derivatives, pybids_db=None):
+def _gen_bids_layout(bids_dir, derivatives, pybids_database_dir, pybids_reset_database):
     """Create (or reindex) the BIDSLayout if one doesn't exist,
     which is only saved if a database directory path is provided
     """
     if os.path.exists(bids_dir):
         # Check if pybids_db is in the config
-        if not pybids_db:
-            pybids_db = {"database_dir": None, "reset_database": False}
-        else:
-            if pybids_db.get("database_dir") == "":
-                pybids_db["database_dir"] = None
+        if pybids_database_dir == '':
+            pybids_database_dir = None
 
         layout = BIDSLayout(
             bids_dir,
             derivatives=derivatives,
             validate=False,
-            database_path=pybids_db.get("database_dir"),
-            reset_database=pybids_db.get("reset_database"),
+            database_path=pybids_database_dir,
+            reset_database=pybids_reset_database,
             indexer=BIDSLayoutIndexer(validate=False, index_metadata=False),
         )
     else:
