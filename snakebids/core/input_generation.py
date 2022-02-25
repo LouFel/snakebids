@@ -1,8 +1,8 @@
 import json
 import logging
 import os
-import pathlib
 import re
+from pathlib import Path
 
 from bids import BIDSLayout, BIDSLayoutIndexer
 
@@ -235,11 +235,15 @@ def _gen_bids_layout(bids_dir, derivatives, pybids_database_dir, pybids_reset_da
     """
     if os.path.exists(bids_dir):
         # Check for database_dir
-        if pybids_database_dir and not pathlib.Path.is_absolute(pybids_database_dir):
-            pybids_database_dir = pathlib.Path.joinpath(bids_dir, pybids_database_dir)
-
+        # If blank, assume db not to be used
         if pybids_database_dir == "":
             pybids_database_dir = None
+        # Otherwise check for relative path and update
+        elif (
+            pybids_database_dir is not None
+            and not Path(pybids_database_dir).is_absolute()
+        ):
+            pybids_database_dir = os.path.join(bids_dir, pybids_database_dir)
 
         layout = BIDSLayout(
             bids_dir,
