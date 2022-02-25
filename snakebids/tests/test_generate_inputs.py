@@ -204,7 +204,7 @@ def test_get_lists_from_bids():
         }
 
 
-def test_db(tmp_path, tmpdir):
+def test_db(tmpdir):
     # Copy existing test folder to a temporary test directory
     shutil.copytree("snakebids/tests/data/bids_t1w", f"{tmpdir}/data")
 
@@ -213,14 +213,24 @@ def test_db(tmp_path, tmpdir):
     pybids_db = {"database_dir": "", "reset_database": False}
 
     # Test non-saving (check db does not exist)
-    _gen_bids_layout(bids_dir=bids_dir, derivatives=False, pybids_db=pybids_db)
+    _gen_bids_layout(
+        bids_dir=bids_dir,
+        derivatives=False,
+        pybids_database_dir=pybids_db.get("database_dir"),
+        pybids_reset_database=pybids_db.get("reset_database"),
+    )
     assert not pybids_db.get("database_dir")
 
     # Test saving of new layout (update config)
-    pybids_db["database_dir"] = f"{tmpdir}/.db"
-    # Check to make sure db exists
-    _gen_bids_layout(bids_dir=bids_dir, derivatives=False, pybids_db=pybids_db)
-    assert os.path.exists(pybids_db.get("database_dir"))
+    pybids_db["database_dir"] = "./.db"
+    # Check to make sure db exists (relative path)
+    _gen_bids_layout(
+        bids_dir=bids_dir,
+        derivatives=False,
+        pybids_database_dir=pybids_db.get("database_dir"),
+        pybids_reset_database=pybids_db.get("reset_database"),
+    )
+    assert os.path.exists(f"{tmpdir}/data/.db/")
 
     # Test reading of old layout when changes occur
     os.makedirs(f"{tmpdir}/data/sub-003/anat")
@@ -229,11 +239,21 @@ def test_db(tmp_path, tmpdir):
         f"{bids_dir}/sub-003/anat/sub-003_acq-mprage_T1w.nii.gz",
     )
     # Check to make sure new subject not cached in layout
-    layout = _gen_bids_layout(bids_dir=bids_dir, derivatives=False, pybids_db=pybids_db)
+    layout = _gen_bids_layout(
+        bids_dir=bids_dir,
+        derivatives=False,
+        pybids_database_dir=pybids_db.get("database_dir"),
+        pybids_reset_database=pybids_db.get("reset_database"),
+    )
     assert not layout.get(subject="003")
 
     # Test updating of layout
     pybids_db["reset_database"] = True
     # Check to see if new subject in updated layout
-    layout = _gen_bids_layout(bids_dir=bids_dir, derivatives=False, pybids_db=pybids_db)
+    layout = _gen_bids_layout(
+        bids_dir=bids_dir,
+        derivatives=False,
+        pybids_database_dir=pybids_db.get("database_dir"),
+        pybids_reset_database=pybids_db.get("reset_database"),
+    )
     assert layout.get(subject="003")
