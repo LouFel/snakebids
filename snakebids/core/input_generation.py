@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import pathlib
 import re
 
 from bids import BIDSLayout, BIDSLayoutIndexer
@@ -166,10 +167,10 @@ def generate_inputs(
 
     # Generates a BIDSLayout
     layout = _gen_bids_layout(
-        bids_dir=bids_dir, 
-        derivatives=derivatives, 
+        bids_dir=bids_dir,
+        derivatives=derivatives,
         pybids_database_dir=pybids_database_dir,
-        pybids_reset_database=pybids_reset_database
+        pybids_reset_database=pybids_reset_database,
     )
 
     # this will populate input_path, input_lists, input_zip_lists, and
@@ -233,8 +234,11 @@ def _gen_bids_layout(bids_dir, derivatives, pybids_database_dir, pybids_reset_da
     which is only saved if a database directory path is provided
     """
     if os.path.exists(bids_dir):
-        # Check if pybids_db is in the config
-        if pybids_database_dir == '':
+        # Check for database_dir
+        if pybids_database_dir and not pathlib.Path.is_absolute(pybids_database_dir):
+            pybids_database_dir = pathlib.Path.joinpath(bids_dir, pybids_database_dir)
+
+        if pybids_database_dir == "":
             pybids_database_dir = None
 
         layout = BIDSLayout(
