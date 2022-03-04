@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 
+import filecmp
 import os
 import shutil
 
@@ -207,6 +208,7 @@ def test_get_lists_from_bids():
 def test_db(tmpdir):
     # Copy existing test folder to a temporary test directory
     shutil.copytree("snakebids/tests/data/bids_t1w", f"{tmpdir}/data")
+    assert filecmp.dircmp("snakebids/tests/data/bids_t1w", f"{tmpdir}/data")
 
     # Create config
     bids_dir = f"{tmpdir}/data"
