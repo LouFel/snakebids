@@ -1,6 +1,5 @@
 import json
 import logging
-import os
 import re
 from pathlib import Path
 
@@ -233,7 +232,7 @@ def _gen_bids_layout(bids_dir, derivatives, pybids_database_dir, pybids_reset_da
     """Create (or reindex) the BIDSLayout if one doesn't exist,
     which is only saved if a database directory path is provided
     """
-    if os.path.exists(bids_dir):
+    if Path(bids_dir).exists():
         # Check for database_dir
         # If blank, assume db not to be used
         if pybids_database_dir == "":
@@ -243,7 +242,7 @@ def _gen_bids_layout(bids_dir, derivatives, pybids_database_dir, pybids_reset_da
             pybids_database_dir is not None
             and not Path(pybids_database_dir).is_absolute()
         ):
-            pybids_database_dir = os.path.join(bids_dir, pybids_database_dir)
+            pybids_database_dir = Path(bids_dir) / pybids_database_dir
 
         layout = BIDSLayout(
             bids_dir,
